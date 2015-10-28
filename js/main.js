@@ -1643,21 +1643,48 @@ class App extends React.Component {
     return (
       <div>
         <input 
-          type          = 'text' 
-          value         = {filter} 
-          onChange      = {this.handleFilterChange} 
-          placeholder   = 'Filter by' />
+          style          = {{margin: '1em 0'}}
+          type           = 'text' 
+          value          = {filter} 
+          onChange       = {this.handleFilterChange} 
+          placeholder    = 'Filter by' />
         <Grid 
-          ref           = 'grid'
-          columns       = {['unitSize', 'name', 'sku', 'description']}
-          labels        = {{
+          ref            = 'grid'
+          columns        = {['unitSize', 'name', 'sku', 'description']}
+          columnWidths   = {['10%', '20%', '10%', '60%']}
+          sortingEnabled = {true}
+          itemsPerPage   = {7}
+          labels         = {{
             'unitSize'    : 'Unit size',
             'name'        : 'Product name',
             'sku'         : 'SKU',
             'description' : 'Description'
           }}
-          filterColumns = {['name', 'sku']}
-          data          = {data} />
+          filterColumns  = {['name', 'sku']}
+          onRowSelected  = {row => { console.log(row) }}
+          styles         = {{
+            grid : {
+              table : { border: '1px solid #dedede' },
+              body : {
+                td : { border: '1px solid #dedede' }
+              }
+            },
+            pagination : {
+              span : {
+                display    : 'block',
+                float      : 'left',
+                padding    : '.3em .5em',
+              },
+              button : {
+                background : 'none',
+                border     : '1px solid #dedede',
+                padding    : '.3em .5em',
+                fontSize   : '1em',
+                cursor     : 'pointer'
+              }
+            }
+          }}
+          data           = {data} />
       </div>
     )
   }

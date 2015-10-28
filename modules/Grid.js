@@ -1,24 +1,66 @@
 import React from 'react'
+import assignDeep from 'object-assign-deep'
 
 class DefaultPagination extends React.Component {
   constructor(props) {
     super(props)
   }
   render() {
-    const { range, currentPage, onSelect } = this.props
+    const { 
+      range, 
+      currentPage, 
+      isFirstPage, 
+      isLastPage, 
+      firstPageIsVisible,
+      lastPageIsVisible,
+      onSelect, 
+      styles 
+    } = this.props
     return (
-      <ul>
+      <ul style={styles.pagination.ul}>
+        {!isFirstPage && (
+          <li style={styles.pagination.li}>
+            <button 
+              style   = {styles.pagination.button}
+              onClick = {() => onSelect(currentPage - 1)}>
+              &lt;
+            </button>
+          </li>
+        )}
+        {!firstPageIsVisible && (
+          <li style={styles.pagination.li}>
+            <button disabled style={styles.pagination.button}>&hellip;</button>
+          </li>
+        )}
         {range.map(page => {
           return (
-            <li key={page}>
+            <li style={styles.pagination.li} key={page}>
               {currentPage === page ? (
-                <span>{page}</span>
+                <span style={styles.pagination.span}>{page}</span>
               ) : (
-                <a href='#' onClick={() => onSelect(page)}>{page}</a>
+                <button 
+                  style   = {styles.pagination.button} 
+                  onClick = {() => onSelect(page)}>
+                  {page}
+                </button>
               )}
             </li>
           )
         })}
+        {!lastPageIsVisible && (
+          <li style={styles.pagination.li}>
+            <button disabled style={styles.pagination.button}>&hellip;</button>
+          </li>
+        )}
+        {!isLastPage && (
+          <li style={styles.pagination.li}>
+            <button 
+              style   = {styles.pagination.button}
+              onClick = {() => onSelect(currentPage + 1)}>
+              &gt;
+            </button>
+          </li>
+        )}
       </ul>
     )
   }
@@ -29,8 +71,23 @@ class DefaultTable extends React.Component {
     super(props)
   }
   render() {
+    const { rows, header, tableClassName, columnWidths, styles } = this.props
     return (
-      <table />
+      <table style={styles.grid.table} className={tableClassName}>
+        {columnWidths && (
+          <colgroup style={styles.grid.colgroup}>
+            {columnWidths.map((width, i) => <col style={styles.grid.col} key={i} width={width} />)}
+          </colgroup>
+        )}
+        {header && (
+          <thead style={styles.grid.header.thead}>
+            <tr style={styles.grid.header.tr}>
+              {header}
+            </tr>
+          </thead>
+        )}
+        <tbody style={styles.grid.body.tbody}>{rows}</tbody>
+      </table>
     ) 
   }
 }
@@ -40,11 +97,16 @@ class DefaultRow extends React.Component {
     super(props)
   }
   render() {
+    const { cells, onClick, isClickable, styles } = this.props
     return (
-      <tr>
-        <td>
-          hello
-        </td>
+      <tr style={styles.grid.body.tr} onClick={onClick}>
+        {cells.map((item, i) => {
+          return (
+            <td key={i} style={styles.grid.body.td}>
+              {item}
+            </td>
+          )
+        })}
       </tr>
     ) 
   }
@@ -54,22 +116,20 @@ class DefaultHeaderCell extends React.Component {
   constructor(props) {
     super(props)
   }
-  handleClickEvent(event) {
-    event.preventDefault()
-    this.props.onClickEvent()
-  }
   render() {
-    const { label, isActive, isAscending } = this.props
+    const { 
+      label, 
+      isActive, 
+      isAscending, 
+      onClick,
+      sortingEnabled,
+      styles
+    } = this.props
     return (
-      <span>
-        {isActive ? (
-          <span>{label}
-            <a href='#' onClick={this.handleClickEvent.bind(this)}>{isAscending ? '[asc]' : '[desc]'}</a>
-          </span>
-        ) : (
-          <a href='#' onClick={this.handleClickEvent.bind(this)}>{label}</a>
-        )}
-      </span>
+      <th style={styles.grid.header.th} onClick={onClick}>
+        {label}
+        {sortingEnabled && isActive && <span>{isAscending ? '\u25bc' : '\u25b2'}</span>}
+      </th>
     ) 
   }
 }
@@ -77,12 +137,36 @@ class DefaultHeaderCell extends React.Component {
 class Grid extends React.Component {
   constructor(props) {
     super(props)
-    const { initialSortBy, initialSortAscending } = props
+    const { initialSortBy, initialSortAscending, sortingEnabled } = props
+    const styles = {
+      grid : {
+        table    : {},
+        colgroup : {},
+        col      : {},
+        header   : {
+          thead  : {},
+          tr     : {},
+          th     : sortingEnabled ? { cursor : 'pointer' } : {}
+        },
+        body     : {
+          tbody  : {},
+          tr     : 'function' === typeof props.onRowSelected ? { cursor : 'pointer' } : {},
+          td     : {}
+        }
+      },
+      pagination : {
+        ul       : { listStyle : 'none', padding : 0 },
+        li       : { float : 'left' },
+        button   : { cursor : 'pointer' },
+        span     : {}
+      }
+    }
     this.state = {
       sortBy    : initialSortBy,
       ascending : initialSortAscending,
       filterBy  : '',
-      page      : 1
+      page      : 1,
+      styles    : props.styles ? assignDeep({}, styles, props.styles) : styles
     }
     this.handleSelectPage = this.handleSelectPage.bind(this)
     this.getPageRange = this.getPageRange.bind(this)
@@ -135,7 +219,8 @@ class Grid extends React.Component {
       if (fst === snd) {
         return 0
       } else {
-        return (ascending ? fst < snd : fst > snd) ? -1 : 1
+        const compare = fst.toLowerCase() < snd.toLowerCase()
+        return (ascending ? compare : !compare) ? -1 : 1
       }
     })
   }
@@ -165,79 +250,64 @@ class Grid extends React.Component {
     const offs = itemsPerPage * (page-1)
     return {
       items     : filteredItems.slice(offs, offs + itemsPerPage),
-      pageCount : Math.ceil(filteredItems.length/itemsPerPage)
+      pageCount : filteredItems.length/itemsPerPage | 0
     }
   }
   render() {
-    const { data, columns, labels, onRowSelected, tableClassName, columnWidths, noResultsMessage, maxButtons } = this.props
+    const { data, columns, labels, onRowSelected, tableClassName, columnWidths, noResultsMessage, maxButtons, sortingEnabled } = this.props
     const PaginationComponent = this.props.paginationComponent
     const HeaderCellComponent = this.props.headerCellComponent
-    const { ascending, sortBy, page } = this.state
+    const RowComponent = this.props.rowComponent
+    const TableComponent = this.props.tableComponent
+    const { ascending, sortBy, page, styles } = this.state
     const { items, pageCount } = this.compile(this.sort(data)) 
+    const range = this.getPageRange(pageCount)
     if (!items.length) {
       return noResultsMessage
     }
     return (
       <div>
-        <table className={tableClassName}>
-          {columnWidths.map((width, i) => {
+        <TableComponent 
+          styles         = {styles}
+          tableClassName = {tableClassName}
+          columnWidths   = {columnWidths}
+          rows = {items.map((item, i) => {
+            const hasClickHandler = 'function' === typeof onRowSelected
             return (
-              <col key={i} width={width} />
+              <RowComponent 
+                key         = {i}
+                styles      = {styles}
+                cells       = {columns.map((column, j) => {
+                  const { customComponents } = this.props
+                  const Component = customComponents ? customComponents[column] : null
+                  return Component ? <Component row={item} data={item[column]} /> : item[column]
+                })}
+                isClickable = {hasClickHandler}
+                onClick     = {hasClickHandler ? () => onRowSelected(item) : () => {}} />
             )
           })}
-          {labels && (
-            <thead>
-              <tr>
-                {columns.map((column, i) => {
-                  return (
-                    <th key={i}>
-                      <HeaderCellComponent 
-                        label             = {labels[column]}
-                        isActive          = {sortBy === column}
-                        isAscending       = {ascending}
-                        onClickEvent      = {() => this.setSortColumn(column)} />
-                      {/*
-                      <a href='#' onClick={e => { 
-                        e.preventDefault(); this.setSortColumn(e, column) 
-                      }}>
-                        {sortBy === column && (
-                          <span>
-                            <i className={`fa fa-arrow-${ascending ? 'down' : 'up'} fa-fw`} />&nbsp;
-                          </span>
-                        )}
-                        {labels[column]}
-                      </a>
-                      */}
-                    </th>
-                  )
-                })}
-              </tr>
-            </thead>
-          )}
-          <tbody>
-            {items.map((item, i) => {
-              const cells = columns.map((column, j) => {
-                const { customComponents } = this.props
-                const Component = customComponents ? customComponents[column] : null
-                return (
-                  <td key={j}>
-                    {Component ? <Component row={item} data={item[column]} /> : item[column]}
-                  </td>
-                )
-              })
-              return 'function' === typeof(onRowSelected) ? (
-                <tr style={{cursor: 'pointer'}} onClick={() => onRowSelected(item)} key={i}>{cells}</tr>
-              ) : (
-                <tr key={i}>{cells}</tr>
-              )
-            })}
-          </tbody>
-        </table>
+          header = {labels ? columns.map((column, i) => {
+            return (
+              <HeaderCellComponent 
+                styles         = {styles}
+                key            = {i}
+                label          = {labels[column]}
+                sortingEnabled = {sortingEnabled}
+                isActive       = {sortBy === column}
+                isAscending    = {ascending}
+                onClick        = {() => this.setSortColumn(column)} />
+            )
+          }) : null} />
         {pageCount > 1 && (
           <PaginationComponent
-            range       = {this.getPageRange(pageCount)}
-            currentPage = {page}
-            onSelect    = {this.handleSelectPage} />
+            styles             = {styles}
+            range              = {range}
+            currentPage        = {page}
+            isFirstPage        = {1 == page}
+            isLastPage         = {range[range.length-1] == page}
+            firstPageIsVisible = {1 == range[0]}
+            lastPageIsVisible  = {pageCount == range[range.length-1]}
+            onSelect           = {this.handleSelectPage} />
         )}
       </div>
     )
