@@ -4,18 +4,22 @@
   "description": "Yet Another React Data-Grid",
   "main": "dist/yard-grid.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-js": "browserify -t [babelify --stage 1] js/main.js > public/bundle.js",
+    "build": "npm run build-js"
   },
   "keywords": [
     "react",
+    "react-component",
     "data-grid",
     "grid",
-    "table",
-    "react-component"
+    "table"
   ],
-  "author": "Johannes Hilden <hildenjohannes@gmail.com>",
+  "author": "Johannes Hilden <johannes@isomorphic.co>",
   "license": "BSD",
   "dependencies": {
     "react": "^0.14.0"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.0"
   }
 }
