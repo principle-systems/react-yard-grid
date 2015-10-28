@@ -1,25 +1,40 @@
 import React from 'react'
 
-function listOf(n) {
-  let p = []
-  for (let i = 1; i <= n; i++) {
-    p.push(i)
-  }
-  return p
-}
+//function listOf(n, from = 1) {
+//  let p = []
+//  const to = from + n
+//  for (let i = from; i <= to; i++) {
+//    p.push(i)
+//  }
+//  return p
+//}
 
 class DefaultPagination extends React.Component {
   constructor(props) {
     super(props)
+    this.getPageRange = this.getPageRange.bind(this)
+  }
+  getPageRange() {
+    const { activePage, items, maxButtons } = this.props
+    const m = activePage - (maxButtons/2 | 0)
+    const [ pages, from ] = items > maxButtons 
+      ? [ maxButtons, m < 1 ? 1 : (m + maxButtons > items ? items - maxButtons : m) ] 
+      : [ items, 1 ]
+    const to = from + pages
+    let range = []
+    for (let i = from; i <= to; i++) {
+      range.push(i)
+    }
+    return range
   }
   render() {
-    const { activePage, items, maxButtons, onSelect } = this.props
+    const { activePage, items, onSelect } = this.props
     if (!items) {
       return <span />
     }
     return (
       <div>
-        {listOf(items).map(page => {
+        {this.getPageRange().map(page => {
           return (
             <span key={page}>
               {activePage === page ? (
@@ -31,11 +46,37 @@ class DefaultPagination extends React.Component {
                   {page}
                 </a>
               )}
-            </span>
+            &nbsp;</span>
           )
         })}
       </div>
     )
+  }
+}
+
+class DefaultTable extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    return (
+      <table />
+    ) 
+  }
+}
+
+class DefaultRow extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    return (
+      <tr>
+        <td>
+          hello
+        </td>
+      </tr>
+    ) 
   }
 }
 
@@ -55,7 +96,7 @@ class Grid extends React.Component {
     this.setState({ page })
   }
   setFilter(filterBy) {
-    this.setState({ filterBy })
+    this.setState({ page : 1, filterBy })
   }
   setSortColumn(event, column) {
     const { sortingEnabled } = this.props
@@ -196,6 +237,8 @@ Grid.defaultProps = {
   initialSortAscending : true,
   columnWidths         : [],
   paginationComponent  : DefaultPagination,
+  tableComponent       : DefaultTable,
+  rowComponent         : DefaultRow,
   noResultsMessage     : (
     <div>
       There are no results to show.
