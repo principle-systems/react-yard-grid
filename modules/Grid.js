@@ -1,55 +1,25 @@
 import React from 'react'
 
-//function listOf(n, from = 1) {
-//  let p = []
-//  const to = from + n
-//  for (let i = from; i <= to; i++) {
-//    p.push(i)
-//  }
-//  return p
-//}
-
 class DefaultPagination extends React.Component {
   constructor(props) {
     super(props)
-    this.getPageRange = this.getPageRange.bind(this)
-  }
-  getPageRange() {
-    const { activePage, items, maxButtons } = this.props
-    const m = activePage - (maxButtons/2 | 0)
-    const [ pages, from ] = items > maxButtons 
-      ? [ maxButtons, m < 1 ? 1 : (m + maxButtons > items ? items - maxButtons : m) ] 
-      : [ items, 1 ]
-    const to = from + pages
-    let range = []
-    for (let i = from; i <= to; i++) {
-      range.push(i)
-    }
-    return range
   }
   render() {
-    const { activePage, items, onSelect } = this.props
-    if (!items) {
-      return <span />
-    }
+    const { range, currentPage, onSelect } = this.props
     return (
-      <div>
-        {this.getPageRange().map(page => {
+      <ul>
+        {range.map(page => {
           return (
-            <span key={page}>
-              {activePage === page ? (
-                <span>
-                  {page}
-                </span>
+            <li key={page}>
+              {currentPage === page ? (
+                <span>{page}</span>
               ) : (
-                <a href='#' onClick={() => onSelect(page)}>
-                  {page}
-                </a>
+                <a href='#' onClick={() => onSelect(page)}>{page}</a>
               )}
-            &nbsp;</span>
+            </li>
           )
         })}
-      </div>
+      </ul>
     )
   }
 }
@@ -80,6 +50,30 @@ class DefaultRow extends React.Component {
   }
 }
 
+class DefaultHeaderCell extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  handleClickEvent(event) {
+    event.preventDefault()
+    this.props.onClickEvent()
+  }
+  render() {
+    const { label, isActive, isAscending } = this.props
+    return (
+      <span>
+        {isActive ? (
+          <span>{label}
+            <a href='#' onClick={this.handleClickEvent.bind(this)}>{isAscending ? '[asc]' : '[desc]'}</a>
+          </span>
+        ) : (
+          <a href='#' onClick={this.handleClickEvent.bind(this)}>{label}</a>
+        )}
+      </span>
+    ) 
+  }
+}
+
 class Grid extends React.Component {
   constructor(props) {
     super(props)
@@ -91,6 +85,7 @@ class Grid extends React.Component {
       page      : 1
     }
     this.handleSelectPage = this.handleSelectPage.bind(this)
+    this.getPageRange = this.getPageRange.bind(this)
   }
   handleSelectPage(page) {
     this.setState({ page })
@@ -98,7 +93,7 @@ class Grid extends React.Component {
   setFilter(filterBy) {
     this.setState({ page : 1, filterBy })
   }
-  setSortColumn(event, column) {
+  setSortColumn(column) {
     const { sortingEnabled } = this.props
     const { ascending, sortBy } = this.state
     if (true !== sortingEnabled) {
@@ -113,6 +108,20 @@ class Grid extends React.Component {
         sortBy : column
       })
     }
+  }
+  getPageRange(items) {
+    const { maxButtons } = this.props
+    const { page } = this.state
+    const m = page - (maxButtons/2 | 0)
+    const [ pages, from ] = items > maxButtons 
+      ? [ maxButtons, m < 1 ? 1 : (m + maxButtons > items ? items - maxButtons : m) ] 
+      : [ items, 1 ]
+    const to = from + pages
+    let range = []
+    for (let i = from; i <= to; i++) {
+      range.push(i)
+    }
+    return range
   }
   sort(items) {
     const { sortingEnabled } = this.props
@@ -162,6 +171,7 @@ class Grid extends React.Component {
   render() {
     const { data, columns, labels, onRowSelected, tableClassName, columnWidths, noResultsMessage, maxButtons } = this.props
     const PaginationComponent = this.props.paginationComponent
+    const HeaderCellComponent = this.props.headerCellComponent
     const { ascending, sortBy, page } = this.state
     const { items, pageCount } = this.compile(this.sort(data)) 
     if (!items.length) {
@@ -181,6 +191,12 @@ class Grid extends React.Component {
                 {columns.map((column, i) => {
                   return (
                     <th key={i}>
+                      <HeaderCellComponent 
+                        label             = {labels[column]}
+                        isActive          = {sortBy === column}
+                        isAscending       = {ascending}
+                        onClickEvent      = {() => this.setSortColumn(column)} />
+                      {/*
                       <a href='#' onClick={e => { 
                         e.preventDefault(); this.setSortColumn(e, column) 
                       }}>
@@ -191,6 +207,7 @@ class Grid extends React.Component {
                         )}
                         {labels[column]}
                       </a>
+                      */}
                     </th>
                   )
                 })}
@@ -218,10 +235,9 @@ class Grid extends React.Component {
         </table>
         {pageCount > 1 && (
           <PaginationComponent
-            items      = {pageCount}
-            activePage = {page}
-            maxButtons = {maxButtons}
-            onSelect   = {this.handleSelectPage} />
+            range       = {this.getPageRange(pageCount)}
+            currentPage = {page}
+            onSelect    = {this.handleSelectPage} />
         )}
       </div>
     )
@@ -239,6 +255,7 @@ Grid.defaultProps = {
   paginationComponent  : DefaultPagination,
   tableComponent       : DefaultTable,
   rowComponent         : DefaultRow,
+  headerCellComponent  : DefaultHeaderCell,
   noResultsMessage     : (
     <div>
       There are no results to show.

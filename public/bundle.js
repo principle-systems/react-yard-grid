@@ -24,15 +24,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-//function listOf(n, from = 1) {
-//  let p = []
-//  const to = from + n
-//  for (let i = from; i <= to; i++) {
-//    p.push(i)
-//  }
-//  return p
-//}
-
 var DefaultPagination = (function (_React$Component) {
   _inherits(DefaultPagination, _React$Component);
 
@@ -40,52 +31,24 @@ var DefaultPagination = (function (_React$Component) {
     _classCallCheck(this, DefaultPagination);
 
     _get(Object.getPrototypeOf(DefaultPagination.prototype), 'constructor', this).call(this, props);
-    this.getPageRange = this.getPageRange.bind(this);
   }
 
   _createClass(DefaultPagination, [{
-    key: 'getPageRange',
-    value: function getPageRange() {
-      var _props = this.props;
-      var activePage = _props.activePage;
-      var items = _props.items;
-      var maxButtons = _props.maxButtons;
-
-      var m = activePage - (maxButtons / 2 | 0);
-
-      var _ref = items > maxButtons ? [maxButtons, m < 1 ? 1 : m + maxButtons > items ? items - maxButtons : m] : [items, 1];
-
-      var _ref2 = _slicedToArray(_ref, 2);
-
-      var pages = _ref2[0];
-      var from = _ref2[1];
-
-      var to = from + pages;
-      var range = [];
-      for (var i = from; i <= to; i++) {
-        range.push(i);
-      }
-      return range;
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _props2 = this.props;
-      var activePage = _props2.activePage;
-      var items = _props2.items;
-      var onSelect = _props2.onSelect;
+      var _props = this.props;
+      var range = _props.range;
+      var currentPage = _props.currentPage;
+      var onSelect = _props.onSelect;
 
-      if (!items) {
-        return _react2['default'].createElement('span', null);
-      }
       return _react2['default'].createElement(
-        'div',
+        'ul',
         null,
-        this.getPageRange().map(function (page) {
+        range.map(function (page) {
           return _react2['default'].createElement(
-            'span',
+            'li',
             { key: page },
-            activePage === page ? _react2['default'].createElement(
+            currentPage === page ? _react2['default'].createElement(
               'span',
               null,
               page
@@ -95,8 +58,7 @@ var DefaultPagination = (function (_React$Component) {
                   return onSelect(page);
                 } },
               page
-            ),
-            ' '
+            )
           );
         })
       );
@@ -152,8 +114,55 @@ var DefaultRow = (function (_React$Component3) {
   return DefaultRow;
 })(_react2['default'].Component);
 
-var Grid = (function (_React$Component4) {
-  _inherits(Grid, _React$Component4);
+var DefaultHeaderCell = (function (_React$Component4) {
+  _inherits(DefaultHeaderCell, _React$Component4);
+
+  function DefaultHeaderCell(props) {
+    _classCallCheck(this, DefaultHeaderCell);
+
+    _get(Object.getPrototypeOf(DefaultHeaderCell.prototype), 'constructor', this).call(this, props);
+  }
+
+  _createClass(DefaultHeaderCell, [{
+    key: 'handleClickEvent',
+    value: function handleClickEvent(event) {
+      event.preventDefault();
+      this.props.onClickEvent();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props2 = this.props;
+      var label = _props2.label;
+      var isActive = _props2.isActive;
+      var isAscending = _props2.isAscending;
+
+      return _react2['default'].createElement(
+        'span',
+        null,
+        isActive ? _react2['default'].createElement(
+          'span',
+          null,
+          label,
+          _react2['default'].createElement(
+            'a',
+            { href: '#', onClick: this.handleClickEvent.bind(this) },
+            isAscending ? '[asc]' : '[desc]'
+          )
+        ) : _react2['default'].createElement(
+          'a',
+          { href: '#', onClick: this.handleClickEvent.bind(this) },
+          label
+        )
+      );
+    }
+  }]);
+
+  return DefaultHeaderCell;
+})(_react2['default'].Component);
+
+var Grid = (function (_React$Component5) {
+  _inherits(Grid, _React$Component5);
 
   function Grid(props) {
     _classCallCheck(this, Grid);
@@ -169,6 +178,7 @@ var Grid = (function (_React$Component4) {
       page: 1
     };
     this.handleSelectPage = this.handleSelectPage.bind(this);
+    this.getPageRange = this.getPageRange.bind(this);
   }
 
   _createClass(Grid, [{
@@ -183,7 +193,7 @@ var Grid = (function (_React$Component4) {
     }
   }, {
     key: 'setSortColumn',
-    value: function setSortColumn(event, column) {
+    value: function setSortColumn(column) {
       var sortingEnabled = this.props.sortingEnabled;
       var _state = this.state;
       var ascending = _state.ascending;
@@ -201,6 +211,28 @@ var Grid = (function (_React$Component4) {
           sortBy: column
         });
       }
+    }
+  }, {
+    key: 'getPageRange',
+    value: function getPageRange(items) {
+      var maxButtons = this.props.maxButtons;
+      var page = this.state.page;
+
+      var m = page - (maxButtons / 2 | 0);
+
+      var _ref = items > maxButtons ? [maxButtons, m < 1 ? 1 : m + maxButtons > items ? items - maxButtons : m] : [items, 1];
+
+      var _ref2 = _slicedToArray(_ref, 2);
+
+      var pages = _ref2[0];
+      var from = _ref2[1];
+
+      var to = from + pages;
+      var range = [];
+      for (var i = from; i <= to; i++) {
+        range.push(i);
+      }
+      return range;
     }
   }, {
     key: 'sort',
@@ -275,6 +307,7 @@ var Grid = (function (_React$Component4) {
       var maxButtons = _props4.maxButtons;
 
       var PaginationComponent = this.props.paginationComponent;
+      var HeaderCellComponent = this.props.headerCellComponent;
       var _state4 = this.state;
       var ascending = _state4.ascending;
       var sortBy = _state4.sortBy;
@@ -307,19 +340,13 @@ var Grid = (function (_React$Component4) {
                 return _react2['default'].createElement(
                   'th',
                   { key: i },
-                  _react2['default'].createElement(
-                    'a',
-                    { href: '#', onClick: function (e) {
-                        e.preventDefault();_this.setSortColumn(e, column);
-                      } },
-                    sortBy === column && _react2['default'].createElement(
-                      'span',
-                      null,
-                      _react2['default'].createElement('i', { className: 'fa fa-arrow-' + (ascending ? 'down' : 'up') + ' fa-fw' }),
-                      ' '
-                    ),
-                    labels[column]
-                  )
+                  _react2['default'].createElement(HeaderCellComponent, {
+                    label: labels[column],
+                    isActive: sortBy === column,
+                    isAscending: ascending,
+                    onClickEvent: function () {
+                      return _this.setSortColumn(column);
+                    } })
                 );
               })
             )
@@ -353,9 +380,8 @@ var Grid = (function (_React$Component4) {
           )
         ),
         pageCount > 1 && _react2['default'].createElement(PaginationComponent, {
-          items: pageCount,
-          activePage: page,
-          maxButtons: maxButtons,
+          range: this.getPageRange(pageCount),
+          currentPage: page,
           onSelect: this.handleSelectPage })
       );
     }
@@ -375,6 +401,7 @@ Grid.defaultProps = {
   paginationComponent: DefaultPagination,
   tableComponent: DefaultTable,
   rowComponent: DefaultRow,
+  headerCellComponent: DefaultHeaderCell,
   noResultsMessage: _react2['default'].createElement(
     'div',
     null,
@@ -384,6 +411,18 @@ Grid.defaultProps = {
 
 exports['default'] = Grid;
 module.exports = exports['default'];
+/*
+<a href='#' onClick={e => { 
+ e.preventDefault(); this.setSortColumn(e, column) 
+}}>
+ {sortBy === column && (
+   <span>
+     <i className={`fa fa-arrow-${ascending ? 'down' : 'up'} fa-fw`} />&nbsp;
+   </span>
+ )}
+ {labels[column]}
+</a>
+*/
 
 },{"react":159}],3:[function(require,module,exports){
 // shim for using process in browser
