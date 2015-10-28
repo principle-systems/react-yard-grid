@@ -7,6 +7,66 @@ const data = [
     name : 'Palak Paneer'
   },
   {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
+    name : 'Palak Paneer'
+  },
+  {
     name : 'Kadai Veg'
   }
 ]
@@ -14,12 +74,31 @@ const data = [
 class App extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      filter : ''
+    }
+    this.handleFilterChange = this.handleFilterChange.bind(this)
+  }
+  handleFilterChange(event) {
+    const filter = event.target.value
+    this.setState({ filter })
+    this.refs.grid.setFilter(filter)
   }
   render() {
+    const { filter } = this.state
     return (
-      <Grid 
-        columns = {['name']}
-        data    = {data} />
+      <div>
+        <input 
+          type          = 'text' 
+          value         = {filter} 
+          onChange      = {this.handleFilterChange} 
+          placeholder   = 'Filter by' />
+        <Grid 
+          ref           = 'grid'
+          columns       = {['name']}
+          filterColumns = {['name']}
+          data          = {data} />
+      </div>
     )
   }
 }
