@@ -217,6 +217,7 @@ var Grid = (function (_React$Component2) {
     value: function render() {
       var _this = this;
 
+      console.log(this.props);
       var _props2 = this.props;
       var data = _props2.data;
       var columns = _props2.columns;
@@ -317,9 +318,7 @@ var Grid = (function (_React$Component2) {
   return Grid;
 })(_react2['default'].Component);
 
-exports['default'] = Grid;
-
-Grid.props = {
+Grid.defaultProps = {
   filterColumns: [],
   itemsPerPage: 10,
   maxButtons: 10,
@@ -335,11 +334,12 @@ Grid.props = {
     _react2['default'].createElement(
       'span',
       { style: { color: '#aaa' } },
-      _react2['default'].createElement(Glyphicon, { glyph: 'remove' }),
-      ' There are no results to show.'
+      '[ x ] There are no results to show.'
     )
   )
 };
+
+exports['default'] = Grid;
 module.exports = exports['default'];
 
 },{"react":159}],3:[function(require,module,exports){

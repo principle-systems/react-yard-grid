@@ -16,7 +16,7 @@ class DefaultPagination extends React.Component {
   }
 }
 
-export default class Grid extends React.Component {
+class Grid extends React.Component {
   constructor(props) {
     super(props)
     const { initialSortBy, initialSortAscending } = props
@@ -97,6 +97,7 @@ export default class Grid extends React.Component {
     }
   }
   render() {
+    console.log(this.props)
     const { data, columns, labels, onRowSelected, tableClassName, columnWidths, noResultsMessage, maxButtons } = this.props
     const PaginationComponent = this.props.paginationComponent
     const { ascending, sortBy, page } = this.state
@@ -165,7 +166,7 @@ export default class Grid extends React.Component {
   }
 }
 
-Grid.props = {
+Grid.defaultProps = {
   filterColumns        : [],
   itemsPerPage         : 10,
   maxButtons           : 10,
@@ -178,8 +179,10 @@ Grid.props = {
     <div>
       <hr style={{margin : '.5em 0 .6em'}} />
       <span style={{color : '#aaa'}}>
-        <Glyphicon glyph='remove' />&nbsp;There are no results to show.
+        [ x ] There are no results to show.
       </span>
     </div>
   )
 }
+
+export default Grid

@@ -17,12 +17,9 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div>
-        hello
-        <Grid 
-          columns = {['name']}
-          data    = {data} />
-      </div>
+      <Grid 
+        columns = {['name']}
+        data    = {data} />
     )
   }
 }
