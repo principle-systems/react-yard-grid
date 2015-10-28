@@ -17,6 +17,8 @@
   "author": "Johannes Hilden <johannes@isomorphic.co>",
   "license": "BSD",
   "dependencies": {
+    "object-assign": "^4.0.1",
+    "object-assign-deep": "0.0.4",
     "react": "^0.14.0",
     "react-dom": "^0.14.0"
   },
