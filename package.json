@@ -14,5 +14,8 @@
     "react-component"
   ],
   "author": "Johannes Hilden <hildenjohannes@gmail.com>",
-  "license": "BSD"
+  "license": "BSD",
+  "dependencies": {
+    "react": "^0.14.0"
+  }
 }
