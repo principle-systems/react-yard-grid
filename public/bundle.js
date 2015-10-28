@@ -26,6 +26,46 @@ var _modulesGrid2 = _interopRequireDefault(_modulesGrid);
 var data = [{
   name: 'Palak Paneer'
 }, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
+  name: 'Palak Paneer'
+}, {
   name: 'Kadai Veg'
 }];
 
@@ -36,17 +76,36 @@ var App = (function (_React$Component) {
     _classCallCheck(this, App);
 
     _get(Object.getPrototypeOf(App.prototype), 'constructor', this).call(this, props);
+    this.state = {
+      filter: ''
+    };
+    this.handleFilterChange = this.handleFilterChange.bind(this);
   }
 
   _createClass(App, [{
+    key: 'handleFilterChange',
+    value: function handleFilterChange(event) {
+      var filter = event.target.value;
+      this.setState({ filter: filter });
+      this.refs.grid.setFilter(filter);
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var filter = this.state.filter;
+
       return _react2['default'].createElement(
         'div',
         null,
-        'hello',
+        _react2['default'].createElement('input', {
+          type: 'text',
+          value: filter,
+          onChange: this.handleFilterChange,
+          placeholder: 'Filter by' }),
         _react2['default'].createElement(_modulesGrid2['default'], {
+          ref: 'grid',
           columns: ['name'],
+          filterColumns: ['name'],
           data: data })
       );
     }
@@ -78,8 +137,13 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-//import { Pagination, Glyphicon }
-//  from 'react-bootstrap'
+function listOf(n) {
+  var p = [];
+  for (var i = 1; i <= n; i++) {
+    p.push(i);
+  }
+  return p;
+}
 
 var DefaultPagination = (function (_React$Component) {
   _inherits(DefaultPagination, _React$Component);
@@ -93,10 +157,35 @@ var DefaultPagination = (function (_React$Component) {
   _createClass(DefaultPagination, [{
     key: 'render',
     value: function render() {
+      var _props = this.props;
+      var activePage = _props.activePage;
+      var items = _props.items;
+      var maxButtons = _props.maxButtons;
+      var onSelect = _props.onSelect;
+
+      if (!items) {
+        return _react2['default'].createElement('span', null);
+      }
       return _react2['default'].createElement(
         'div',
-        { style: { textAlign: 'center' } },
-        'Hello pagination'
+        null,
+        listOf(items).map(function (page) {
+          return _react2['default'].createElement(
+            'span',
+            { key: page },
+            activePage === page ? _react2['default'].createElement(
+              'span',
+              null,
+              page
+            ) : _react2['default'].createElement(
+              'a',
+              { href: '#', onClick: function () {
+                  return onSelect(page);
+                } },
+              page
+            )
+          );
+        })
       );
     }
   }]);
@@ -115,24 +204,23 @@ var Grid = (function (_React$Component2) {
     var initialSortAscending = props.initialSortAscending;
 
     this.state = {
-      filterBy: '',
       sortBy: initialSortBy,
       ascending: initialSortAscending,
+      filterBy: '',
       page: 1
     };
+    this.handleSelectPage = this.handleSelectPage.bind(this);
   }
 
   _createClass(Grid, [{
     key: 'handleSelectPage',
-    value: function handleSelectPage(event, item) {
-      this.setState({
-        page: item.eventKey
-      });
+    value: function handleSelectPage(page) {
+      this.setState({ page: page });
     }
   }, {
-    key: 'filterBy',
-    value: function filterBy(_filterBy) {
-      this.setState({ filterBy: _filterBy });
+    key: 'setFilter',
+    value: function setFilter(filterBy) {
+      this.setState({ filterBy: filterBy });
     }
   }, {
     key: 'setSortColumn',
@@ -185,9 +273,9 @@ var Grid = (function (_React$Component2) {
           pageCount: 1
         };
       }
-      var _props = this.props;
-      var itemsPerPage = _props.itemsPerPage;
-      var filterColumns = _props.filterColumns;
+      var _props2 = this.props;
+      var itemsPerPage = _props2.itemsPerPage;
+      var filterColumns = _props2.filterColumns;
       var _state3 = this.state;
       var page = _state3.page;
       var filterBy = _state3.filterBy;
@@ -217,16 +305,15 @@ var Grid = (function (_React$Component2) {
     value: function render() {
       var _this = this;
 
-      console.log(this.props);
-      var _props2 = this.props;
-      var data = _props2.data;
-      var columns = _props2.columns;
-      var labels = _props2.labels;
-      var onRowSelected = _props2.onRowSelected;
-      var tableClassName = _props2.tableClassName;
-      var columnWidths = _props2.columnWidths;
-      var noResultsMessage = _props2.noResultsMessage;
-      var maxButtons = _props2.maxButtons;
+      var _props3 = this.props;
+      var data = _props3.data;
+      var columns = _props3.columns;
+      var labels = _props3.labels;
+      var onRowSelected = _props3.onRowSelected;
+      var tableClassName = _props3.tableClassName;
+      var columnWidths = _props3.columnWidths;
+      var noResultsMessage = _props3.noResultsMessage;
+      var maxButtons = _props3.maxButtons;
 
       var PaginationComponent = this.props.paginationComponent;
       var _state4 = this.state;
@@ -330,12 +417,7 @@ Grid.defaultProps = {
   noResultsMessage: _react2['default'].createElement(
     'div',
     null,
-    _react2['default'].createElement('hr', { style: { margin: '.5em 0 .6em' } }),
-    _react2['default'].createElement(
-      'span',
-      { style: { color: '#aaa' } },
-      '[ x ] There are no results to show.'
-    )
+    'There are no results to show.'
   )
 };
 
