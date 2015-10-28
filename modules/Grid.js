@@ -1,16 +1,39 @@
 import React from 'react'
 
-//import { Pagination, Glyphicon }
-//  from 'react-bootstrap'
+function listOf(n) {
+  let p = []
+  for (let i = 1; i <= n; i++) {
+    p.push(i)
+  }
+  return p
+}
 
 class DefaultPagination extends React.Component {
   constructor(props) {
     super(props)
   }
   render() {
+    const { activePage, items, maxButtons, onSelect } = this.props
+    if (!items) {
+      return <span />
+    }
     return (
-      <div style={{textAlign: 'center'}}>
-        Hello pagination
+      <div>
+        {listOf(items).map(page => {
+          return (
+            <span key={page}>
+              {activePage === page ? (
+                <span>
+                  {page}
+                </span>
+              ) : (
+                <a href='#' onClick={() => onSelect(page)}>
+                  {page}
+                </a>
+              )}
+            </span>
+          )
+        })}
       </div>
     )
   }
@@ -21,18 +44,17 @@ class Grid extends React.Component {
     super(props)
     const { initialSortBy, initialSortAscending } = props
     this.state = {
-      filterBy  : '',
       sortBy    : initialSortBy,
       ascending : initialSortAscending,
+      filterBy  : '',
       page      : 1
     }
+    this.handleSelectPage = this.handleSelectPage.bind(this)
   }
-  handleSelectPage(event, item) {
-    this.setState({
-      page : item.eventKey
-    })
+  handleSelectPage(page) {
+    this.setState({ page })
   }
-  filterBy(filterBy) {
+  setFilter(filterBy) {
     this.setState({ filterBy })
   }
   setSortColumn(event, column) {
@@ -97,7 +119,6 @@ class Grid extends React.Component {
     }
   }
   render() {
-    console.log(this.props)
     const { data, columns, labels, onRowSelected, tableClassName, columnWidths, noResultsMessage, maxButtons } = this.props
     const PaginationComponent = this.props.paginationComponent
     const { ascending, sortBy, page } = this.state
@@ -177,10 +198,7 @@ Grid.defaultProps = {
   paginationComponent  : DefaultPagination,
   noResultsMessage     : (
     <div>
-      <hr style={{margin : '.5em 0 .6em'}} />
-      <span style={{color : '#aaa'}}>
-        [ x ] There are no results to show.
-      </span>
+      There are no results to show.
     </div>
   )
 }
