@@ -77,8 +77,8 @@ var App = (function (_React$Component) {
             'description': 'Description'
           },
           filterColumns: ['name', 'sku'],
-          onRowSelected: function (row) {
-            console.log(row);
+          onRowSelected: function (item) {
+            alert('You clicked on ' + item.name);
           },
           data: _jsExamplesTestdata2['default'],
           styles: {
