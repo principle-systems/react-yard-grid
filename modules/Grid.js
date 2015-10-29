@@ -199,7 +199,7 @@ class Grid extends React.Component {
     const m = page - (maxButtons/2 | 0)
     const [ pages, from ] = items > maxButtons 
       ? [ maxButtons, m < 1 ? 1 : (m + maxButtons > items ? items - maxButtons : m) ] 
-      : [ items, 1 ]
+      : [ items - 1, 1 ]
     const to = from + pages
     let range = []
     for (let i = from; i <= to; i++) {
@@ -250,7 +250,7 @@ class Grid extends React.Component {
     const offs = itemsPerPage * (page-1)
     return {
       items     : filteredItems.slice(offs, offs + itemsPerPage),
-      pageCount : filteredItems.length/itemsPerPage | 0
+      pageCount : Math.ceil(filteredItems.length/itemsPerPage)
     }
   }
   render() {
