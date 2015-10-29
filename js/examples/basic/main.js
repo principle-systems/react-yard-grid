@@ -1,7 +1,7 @@
 import React       from 'react'
 import ReactDOM    from 'react-dom'
-import Grid        from '../modules/Grid'
-import data        from '../js/examples/testdata'
+import Grid        from '../../../modules/Grid'
+import data        from '../../../js/examples/testdata'
 
 class App extends React.Component {
   constructor(props) {

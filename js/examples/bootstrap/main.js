@@ -114,7 +114,7 @@ class App extends React.Component {
               'description' : 'Description'
             }}
             filterColumns       = {['name', 'sku']}
-            onRowSelected       = {row => { console.log(row) }}
+            onRowSelected       = {item => { alert(`You clicked on ${item.name}`) }}
             data                = {data} 
             paginationComponent = {BootstrapPagination} />
         </div>
