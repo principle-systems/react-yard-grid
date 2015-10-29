@@ -5,7 +5,8 @@
   "main": "dist/yard-grid.js",
   "scripts": {
     "build-js": "browserify -t [babelify --stage 1] js/main.js > public/bundle.js",
-    "build": "npm run build-js"
+    "build": "npm run build-js",
+    "babelify": "babel modules/Grid.js --out-file dist/yard-grid.js --source-maps"
   },
   "keywords": [
     "react",
