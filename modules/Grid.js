@@ -1,4 +1,4 @@
-import React from 'react'
+import React      from 'react'
 import assignDeep from 'object-assign-deep'
 
 class DefaultPagination extends React.Component {
@@ -231,16 +231,9 @@ class Grid extends React.Component {
         pageCount : 1
       }
     }
-    const { itemsPerPage, filterColumns } = this.props
+    const { itemsPerPage, filterColumns, filterFunction } = this.props
     const { page, filterBy } = this.state
-    const filteredItems = !filterBy || !filterColumns || !filterColumns.length ? items : items.filter(item => {
-      for (let i = 0; i < filterColumns.length; i++) {
-        if (String(item[filterColumns[i]]).toLowerCase().indexOf(filterBy.toLowerCase()) > -1) {
-          return true
-        }
-      }
-      return false
-    })
+    const filteredItems = !filterBy || !filterColumns || !filterColumns.length ? items : filterFunction(items, filterColumns, filterBy)
     if (!itemsPerPage || filteredItems.length <= itemsPerPage) {
       return {
         items     : filteredItems,
@@ -326,6 +319,17 @@ Grid.defaultProps = {
   tableComponent       : DefaultTable,
   rowComponent         : DefaultRow,
   headerCellComponent  : DefaultHeaderCell,
+  filterFunction       : (items, columns, filter) => {
+    const locase = filter.toLowerCase()
+    return items.filter(row => {
+      for (let col of columns) {
+        if (row.hasOwnProperty(col) && String(row[col]).toLowerCase().indexOf(locase) > -1) {
+          return true
+        }
+      }
+      return false
+    })
+  },
   noResultsMessage     : (
     <div>
       There are no results to show.

@@ -590,18 +590,12 @@ var Grid = (function (_React$Component5) {
       var _props5 = this.props;
       var itemsPerPage = _props5.itemsPerPage;
       var filterColumns = _props5.filterColumns;
+      var filterFunction = _props5.filterFunction;
       var _state3 = this.state;
       var page = _state3.page;
       var filterBy = _state3.filterBy;
 
-      var filteredItems = !filterBy || !filterColumns || !filterColumns.length ? items : items.filter(function (item) {
-        for (var i = 0; i < filterColumns.length; i++) {
-          if (String(item[filterColumns[i]]).toLowerCase().indexOf(filterBy.toLowerCase()) > -1) {
-            return true;
-          }
-        }
-        return false;
-      });
+      var filteredItems = !filterBy || !filterColumns || !filterColumns.length ? items : filterFunction(items, filterColumns, filterBy);
       if (!itemsPerPage || filteredItems.length <= itemsPerPage) {
         return {
           items: filteredItems,
@@ -712,6 +706,39 @@ Grid.defaultProps = {
   tableComponent: DefaultTable,
   rowComponent: DefaultRow,
   headerCellComponent: DefaultHeaderCell,
+  filterFunction: function filterFunction(items, columns, filter) {
+    var locase = filter.toLowerCase();
+    return items.filter(function (row) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = columns[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var col = _step.value;
+
+          if (row.hasOwnProperty(col) && String(row[col]).toLowerCase().indexOf(locase) > -1) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return false;
+    });
+  },
   noResultsMessage: _react2['default'].createElement(
     'div',
     null,
