@@ -1,7 +1,7 @@
 import React       from 'react'
 import ReactDOM    from 'react-dom'
 import Grid        from '../../../modules/Grid'
-import data        from '../../../js/examples/testdata'
+import data        from '../../../js/examples/data/products'
 
 class BootstrapPagination extends React.Component {
   constructor(props) {

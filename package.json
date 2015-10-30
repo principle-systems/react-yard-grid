@@ -4,7 +4,7 @@
   "description": "Yet Another React Data-Grid",
   "main": "dist/yard-grid.js",
   "scripts": {
-    "build-js": "browserify -t [babelify --stage 1] js/examples/basic/main.js > public/examples/basic/bundle.js & browserify -t [babelify --stage 1] js/examples/bootstrap/main.js > public/examples/bootstrap/bundle.js",
+    "build-js": "browserify -t [babelify --stage 1] js/examples/filter/main.js > public/examples/filter/bundle.js & browserify -t [babelify --stage 1] js/examples/minimal/main.js > public/examples/minimal/bundle.js & browserify -t [babelify --stage 1] js/examples/basic/main.js > public/examples/basic/bundle.js & browserify -t [babelify --stage 1] js/examples/bootstrap/main.js > public/examples/bootstrap/bundle.js",
     "build": "npm run build-js",
     "babelify": "babel modules/Grid.js --out-file dist/yard-grid.js --source-maps"
   },
