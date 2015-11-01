@@ -172,26 +172,25 @@ class Grid extends React.Component {
     this.getPageRange = this.getPageRange.bind(this)
   }
   handleSelectPage(page) {
+    const { onPageChange } = this.props
     this.setState({ page })
+    onPageChange(page)
   }
   setFilter(filterBy) {
     this.setState({ page : 1, filterBy })
   }
   setSortColumn(column) {
-    const { sortingEnabled } = this.props
+    const { sortingEnabled, onSortChange } = this.props
     const { ascending, sortBy } = this.state
     if (true !== sortingEnabled) {
       return
     }
-    if (column === sortBy) {
-      this.setState({
-        ascending : !ascending
-      })
-    } else {
-      this.setState({
-        sortBy : column
-      })
-    }
+    const order = column === sortBy ? !ascending : true
+    this.setState({
+      sortBy    : column,
+      ascending : order
+    })
+    onSortChange(column, order)
   }
   getPageRange(items) {
     const { maxButtons } = this.props
@@ -319,6 +318,8 @@ Grid.defaultProps = {
   tableComponent       : DefaultTable,
   rowComponent         : DefaultRow,
   headerCellComponent  : DefaultHeaderCell,
+  onPageChange         : () => {},
+  onSortChange         : () => {},
   filterFunction       : (items, columns, filter) => {
     const locase = filter.toLowerCase()
     return items.filter(row => {

@@ -317,7 +317,10 @@ var Grid = (function (_React$Component5) {
   _createClass(Grid, [{
     key: 'handleSelectPage',
     value: function handleSelectPage(page) {
+      var onPageChange = this.props.onPageChange;
+
       this.setState({ page: page });
+      onPageChange(page);
     }
   }, {
     key: 'setFilter',
@@ -327,7 +330,9 @@ var Grid = (function (_React$Component5) {
   }, {
     key: 'setSortColumn',
     value: function setSortColumn(column) {
-      var sortingEnabled = this.props.sortingEnabled;
+      var _props5 = this.props;
+      var sortingEnabled = _props5.sortingEnabled;
+      var onSortChange = _props5.onSortChange;
       var _state = this.state;
       var ascending = _state.ascending;
       var sortBy = _state.sortBy;
@@ -335,15 +340,12 @@ var Grid = (function (_React$Component5) {
       if (true !== sortingEnabled) {
         return;
       }
-      if (column === sortBy) {
-        this.setState({
-          ascending: !ascending
-        });
-      } else {
-        this.setState({
-          sortBy: column
-        });
-      }
+      var order = column === sortBy ? !ascending : true;
+      this.setState({
+        sortBy: column,
+        ascending: order
+      });
+      onSortChange(column, order);
     }
   }, {
     key: 'getPageRange',
@@ -398,10 +400,10 @@ var Grid = (function (_React$Component5) {
           pageCount: 1
         };
       }
-      var _props5 = this.props;
-      var itemsPerPage = _props5.itemsPerPage;
-      var filterColumns = _props5.filterColumns;
-      var filterFunction = _props5.filterFunction;
+      var _props6 = this.props;
+      var itemsPerPage = _props6.itemsPerPage;
+      var filterColumns = _props6.filterColumns;
+      var filterFunction = _props6.filterFunction;
       var _state3 = this.state;
       var page = _state3.page;
       var filterBy = _state3.filterBy;
@@ -424,16 +426,16 @@ var Grid = (function (_React$Component5) {
     value: function render() {
       var _this = this;
 
-      var _props6 = this.props;
-      var data = _props6.data;
-      var columns = _props6.columns;
-      var labels = _props6.labels;
-      var onRowSelected = _props6.onRowSelected;
-      var tableClassName = _props6.tableClassName;
-      var columnWidths = _props6.columnWidths;
-      var noResultsMessage = _props6.noResultsMessage;
-      var maxButtons = _props6.maxButtons;
-      var sortingEnabled = _props6.sortingEnabled;
+      var _props7 = this.props;
+      var data = _props7.data;
+      var columns = _props7.columns;
+      var labels = _props7.labels;
+      var onRowSelected = _props7.onRowSelected;
+      var tableClassName = _props7.tableClassName;
+      var columnWidths = _props7.columnWidths;
+      var noResultsMessage = _props7.noResultsMessage;
+      var maxButtons = _props7.maxButtons;
+      var sortingEnabled = _props7.sortingEnabled;
 
       var PaginationComponent = this.props.paginationComponent;
       var HeaderCellComponent = this.props.headerCellComponent;
@@ -517,6 +519,12 @@ Grid.defaultProps = {
   tableComponent: DefaultTable,
   rowComponent: DefaultRow,
   headerCellComponent: DefaultHeaderCell,
+  onPageChange: function onPageChange(page) {
+    console.log('Page #' + page);
+  },
+  onSortChange: function onSortChange(column, ascending) {
+    console.log('Sorting on column ' + column + ' in ' + (ascending ? 'ascending' : 'descending') + ' order');
+  },
   filterFunction: function filterFunction(items, columns, filter) {
     var locase = filter.toLowerCase();
     return items.filter(function (row) {
