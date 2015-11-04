@@ -708,12 +708,8 @@ Grid.defaultProps = {
   tableComponent: DefaultTable,
   rowComponent: DefaultRow,
   headerCellComponent: DefaultHeaderCell,
-  onPageChange: function onPageChange(page) {
-    console.log('Page #' + page);
-  },
-  onSortChange: function onSortChange(column, ascending) {
-    console.log('Sorting on column ' + column + ' in ' + (ascending ? 'ascending' : 'descending') + ' order');
-  },
+  onPageChange: function onPageChange() {},
+  onSortChange: function onSortChange() {},
   filterFunction: function filterFunction(items, columns, filter) {
     var locase = filter.toLowerCase();
     return items.filter(function (row) {
